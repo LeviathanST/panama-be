@@ -1,0 +1,62 @@
+services:
+  app:
+    build:
+      context: .
+    environment:
+      PORT: ${PORT}
+      CLIENT_URL: ${CLIENT_URL}
+      ROUND_HASHING: ${ROUND_HASHING}
+      SECRET: ${SECRET}
+      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on: 
+      db:
+        condition: service_healthy 
+    ports:
+      - ${PORT}:${PORT}
+    networks:
+      - be
+  db: 
+    image: postgres:17.5-alpine3.21
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - be
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PG_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PG_PASSWORD}
+      PGADMIN_LISTEN_ADDRESS: ${PG_LISTEN_ADDRESS}
+      PGADMIN_LISTEN_PORT: ${PG_LISTEN_PORT}
+    ports:
+      - ${PG_PORT}:80
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - be
+
+networks:
+  be:
+volumes:
+  data:
+  pgadmin-data:

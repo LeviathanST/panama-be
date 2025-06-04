@@ -1,0 +1,24 @@
+.{
+    .name = .panama_be,
+    .version = "0.0.0",
+    .fingerprint = 0xfd014afcc04a1cd1,
+    .dependencies = .{
+        .tokamak = .{
+            .url = "git+https://github.com/LeviathanST/tokamak?ref=main#6c6098fa32a3408b5050d3431cb776809503f420",
+            .hash = "tokamak-2.0.0-FbnSeVEzAwChfvpdlvEoXaprSpzt3gJDYAWERswiivbM",
+        },
+        .zenv = .{
+            .url = "git+https://github.com/zig-space/zenv?ref=master#b00ee934a058417475917ac5f8275af6894b2d16",
+            .hash = "zenv-0.0.0-hX4COQUuAAAdvLBXuB4c2qhKnVH7ZwSXu7hINqk1SDIp",
+        },
+        .pg = .{
+            .url = "git+https://github.com/karlseguin/pg.zig?ref=master#b457f000be272bc9939949d6a8329b6da7aa9b12",
+            .hash = "pg-0.0.0-Wp_7gQkCBgDw1-q7u6sIhQHD52pxZZJ0V6SHU0Y5jP2I",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src/main.zig",
+    },
+}
