@@ -12,7 +12,8 @@ _reader: zenv.Reader,
 pub const AppConfig = struct {
     port: u16,
     round_hashing: u6,
-    secret: []const u8,
+    at_secret: []const u8,
+    rt_secret: []const u8,
     client_url: []const u8,
 };
 

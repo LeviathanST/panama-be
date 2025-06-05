@@ -6,7 +6,8 @@ services:
       PORT: ${PORT}
       CLIENT_URL: ${CLIENT_URL}
       ROUND_HASHING: ${ROUND_HASHING}
-      SECRET: ${SECRET}
+      AT_SECRET: ${AT_SECRET}
+      RT_SECRET: ${RT_SECRET}
       DB_PORT: ${DB_PORT}
       DB_HOST: ${DB_HOST}
       DB_DATABASE: ${DB_DATABASE}

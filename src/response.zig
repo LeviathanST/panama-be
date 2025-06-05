@@ -1,16 +1,31 @@
 const tk = @import("tokamak");
-pub fn sendErr(ctx: *tk.Context, status: u16, message: []const u8, data: anytype) !void {
-    try ctx.send(.{
-        .status = status,
-        .message = message,
-        .@"error" = data,
-    });
+pub fn Success(comptime T: type) type {
+    return struct {
+        const Self = @This();
+
+        status: u16 = 200,
+        message: []const u8,
+        data: T,
+
+        pub fn with(self: Self) Self {
+            return self;
+        }
+    };
 }
-/// The response always have `status code = 200`
-pub fn sendSuccess(ctx: *tk.Context, message: []const u8, data: anytype) !void {
-    try ctx.send(.{
-        .status = 200,
-        .message = message,
-        .data = data,
-    });
+pub fn Error(comptime T: type) type {
+    return struct {
+        const Self = @This();
+
+        status: u16,
+        message: []const u8,
+        @"error": T,
+
+        pub fn with(self: Self) Self {
+            return self;
+        }
+        pub fn sendResponse(self: Self, ctx: *tk.Context) !void {
+            ctx.res.status = self.status;
+            try ctx.res.json(self, .{ .emit_null_optional_fields = false });
+        }
+    };
 }

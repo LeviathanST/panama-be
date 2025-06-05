@@ -15,6 +15,14 @@
             .url = "git+https://github.com/karlseguin/pg.zig?ref=master#b457f000be272bc9939949d6a8329b6da7aa9b12",
             .hash = "pg-0.0.0-Wp_7gQkCBgDw1-q7u6sIhQHD52pxZZJ0V6SHU0Y5jP2I",
         },
+        .zig_jwt = .{
+            .url = "git+https://github.com/deatil/zig-jwt?ref=main#7ed58ec897fa0fd05218999e452f9b345742e6d6",
+            .hash = "zig_jwt-1.2.0-w3q9SIMmBADyvPMoByJKup0vjhIvhk19rF8ZJdgPl3ne",
+        },
+        .uuid = .{
+            .url = "git+https://github.com/r4gus/uuid-zig?ref=master#9d66e23e32cd7208d1becb4fd9352f8a27f89551",
+            .hash = "uuid-0.3.0-oOieIYF1AAA_BtE7FvVqqTn5uEYTvvz7ycuVnalCOf8C",
+        },
     },
     .paths = .{
         "build.zig",
