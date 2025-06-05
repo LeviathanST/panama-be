@@ -28,6 +28,11 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .column_names = true,
     }).module("pg");
+    const uuid = b.dependency("uuid", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("uuid");
+    const jwt = b.dependency("zig_jwt", .{}).module("zig-jwt");
 
     exe.root_module.addImport("response", b.addModule("response", .{
         .root_source_file = b.path("src/response.zig"),
@@ -45,5 +50,7 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("tokamak", tokamak);
     exe.root_module.addImport("zenv", zenv);
     exe.root_module.addImport("pg", pg);
+    exe.root_module.addImport("zig-jwt", jwt);
+    exe.root_module.addImport("uuid", uuid);
     run_step.dependOn(&run_exe.step);
 }
