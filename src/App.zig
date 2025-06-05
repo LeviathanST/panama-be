@@ -65,12 +65,20 @@ const ErrorMapping = struct {
 const error_mappings = [_]ErrorMapping{
     .{ .err = GeneralError.ParamEmpty, .status = 400, .message = "Request params empty!" },
     .{ .err = GeneralError.InvalidInput, .status = 400, .message = "Invalid input provided!" },
+
     .{ .err = AuthError.Unauthorized, .status = 401, .message = "You not have permissions!" },
+
     .{ .err = UserError.FindError.UserNotFound, .status = 400, .message = "User not found!" },
     .{ .err = UserError.InsertError.UserExisted, .status = 400, .message = "User is existed" },
+
     .{ .err = LoginError.WrongPassword, .status = 400, .message = "Wrong password" },
+
     .{ .err = TokenError.InvalidToken, .status = 400, .message = "Invalid token!" },
     .{ .err = TokenError.ExpiredToken, .status = 400, .message = "Expired token!" },
+    .{ .err = TokenError.JWTAlgoInvalid, .status = 400, .message = "Invalid token!" },
+    .{ .err = TokenError.JWTSigningMethodNotExists, .status = 400, .message = "Invalid token!" },
+    .{ .err = TokenError.JWTTypeInvalid, .status = 400, .message = "Invalid token!" },
+    .{ .err = TokenError.JWTVerifyFail, .status = 400, .message = "Invalid token!" },
 };
 
 pub fn errorHandler(ctx: *tk.Context, err: anyerror) !void {
