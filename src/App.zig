@@ -1,8 +1,10 @@
+const std = @import("std");
 const tk = @import("tokamak");
 const response = @import("response");
 const zenv = @import("zenv");
 const pg = @import("pg");
 
+const util = @import("util.zig");
 const model = @import("model");
 const mw = @import("middleware.zig");
 const api = @import("api.zig");
@@ -24,6 +26,8 @@ routes: []const tk.Route = &.{
     .get("/swagger-ui", tk.swagger.ui(.{ .url = "openapi.json" })),
 },
 config: Config,
+/// Using to check valid token
+token_fingerprints: std.StringHashMap([]const u8),
 
 pub fn initServer(ct: *tk.Container, routes: []const tk.Route, config: Config) !tk.Server {
     return try tk.app.Base.initServer(ct, routes, .{
@@ -47,13 +51,41 @@ pub fn initPool(ct: *tk.Container, config: *Config) !pg.Pool {
     })).*;
 }
 
-pub const GeneralError = error{ParamEmpty};
+const GeneralError = error{ ParamEmpty, InvalidInput };
+const AuthError = mw.Auth.Error;
+const UserError = model.User;
+const LoginError = api.LoginError;
+const TokenError = util.TokenError;
+
+const ErrorMapping = struct {
+    err: anyerror,
+    status: u16,
+    message: []const u8,
+};
+const error_mappings = [_]ErrorMapping{
+    .{ .err = GeneralError.ParamEmpty, .status = 400, .message = "Request params empty!" },
+    .{ .err = GeneralError.InvalidInput, .status = 400, .message = "Invalid input provided!" },
+    .{ .err = AuthError.Unauthorized, .status = 401, .message = "You not have permissions!" },
+    .{ .err = UserError.FindError.UserNotFound, .status = 400, .message = "User not found!" },
+    .{ .err = UserError.InsertError.UserExisted, .status = 400, .message = "User is existed" },
+    .{ .err = LoginError.WrongPassword, .status = 400, .message = "Wrong password" },
+    .{ .err = TokenError.InvalidToken, .status = 400, .message = "Invalid token!" },
+    .{ .err = TokenError.ExpiredToken, .status = 400, .message = "Expired token!" },
+};
 
 pub fn errorHandler(ctx: *tk.Context, err: anyerror) !void {
-    switch (err) {
-        GeneralError.ParamEmpty => try response.sendErr(ctx, 400, "Request params is empty!", null),
-        mw.Auth.Error.Unauthorized => try response.sendErr(ctx, 401, "You not have permissions!", null),
-        model.User.FindError.UserNotFound => try response.sendErr(ctx, 400, "User not found!", null),
-        else => try response.sendErr(ctx, 500, "Server Internal Error", null),
+    const ResponseError = response.Error;
+    var res = ResponseError(void).with(.{ .status = 500, .message = "Internal Server Error", .@"error" = {} });
+
+    inline for (error_mappings) |mapping| {
+        if (err == mapping.err) {
+            res.status = mapping.status;
+            res.message = mapping.message;
+            break;
+        }
+    } else {
+        std.log.err("Unexpected error: {}, name: {s}", .{ err, @errorName(err) });
     }
+
+    try ctx.send(res);
 }
