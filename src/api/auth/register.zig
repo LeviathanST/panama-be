@@ -1,9 +1,8 @@
 const std = @import("std");
-const tk = @import("tokamak");
-const Success = @import("response").Success;
 const pg = @import("pg");
+
 const User = @import("model").User;
-const util = @import("../../util.zig");
+const Success = @import("response").Success;
 const Config = @import("../../Config.zig");
 
 pub const Error = User.InsertError;
@@ -13,8 +12,8 @@ const RegisterDTO = struct {
     password: []const u8,
 };
 
-pub fn register(config: Config, p: *pg.Pool, data: RegisterDTO) !Success(?u8) {
-    try registerInternal(p, config.app.round_hashing, data);
+pub fn register(config: Config, pool: *pg.Pool, data: RegisterDTO) !Success(?u8) {
+    try registerInternal(pool, config.app.round_hashing, data);
     return .with(.{
         .message = "Register sucessful!",
         .data = null,

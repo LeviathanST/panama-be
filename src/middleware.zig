@@ -3,7 +3,6 @@ const tk = @import("tokamak");
 const pg = @import("pg");
 const util = @import("util.zig");
 const Config = @import("Config.zig");
-const GeneralError = @import("App.zig").GeneralError;
 const User = @import("model").User;
 
 // TODO: Using role for authentication

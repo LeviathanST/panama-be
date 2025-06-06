@@ -16,13 +16,13 @@ const LoginDTO = struct {
 };
 
 pub fn login(
-    req: tk.Request,
     token_fingerprints: *std.StringHashMap([]const u8),
+    req: tk.Request,
     config: Config,
-    p: *pg.Pool,
+    pool: *pg.Pool,
     data: LoginDTO,
 ) !Success(Pair) {
-    try loginInternal(req.arena, p, data);
+    try loginInternal(req.arena, pool, data);
     const pair = try util.token.generate(
         req.arena,
         token_fingerprints,
