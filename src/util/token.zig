@@ -72,9 +72,7 @@ pub fn verify(
     const s = jwt.SigningMethodHS256.init(alloc);
     const token = try s.parse(t, secret);
     const parsed = try isValid(alloc, token, valid_type);
-    std.log.info("username {s}", .{parsed.username});
     const fingerprint = fingerprints_map.get(parsed.username) orelse return Error.InvalidToken;
-    std.log.info("finger {s}", .{fingerprint});
     if (!std.mem.eql(u8, fingerprint, parsed.fingerprint)) return Error.InvalidToken;
     return parsed;
 }
