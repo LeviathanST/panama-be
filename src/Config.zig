@@ -5,8 +5,15 @@ const Config = @This();
 
 app: AppConfig,
 db: DBConfig,
+s3: S3Config,
 _reader: zenv.Reader,
 
+pub const S3Config = struct {
+    endpoint_url: []const u8,
+    bucket: []const u8,
+    access_key_id: []const u8,
+    secret_access_key: []const u8,
+};
 pub const AppConfig = struct {
     port: u16,
     round_hashing: u6,
@@ -29,10 +36,12 @@ pub fn init(allocator: std.mem.Allocator) !Config {
 
     const app = try reader.readStruct(AppConfig, .{});
     const db = try reader.readStruct(DBConfig, .{ .prefix = "DB_" });
+    const s3 = try reader.readStruct(S3Config, .{ .prefix = "S3_" });
 
     return .{
         .app = app.*,
         .db = db.*,
+        .s3 = s3.*,
         ._reader = reader,
     };
 }
