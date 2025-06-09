@@ -22,8 +22,8 @@ pub fn refresh(
         config.app.at_secret,
         config.app.rt_secret,
     );
-    return .with(.{
+    return .{
         .message = "Refresh token successful!",
         .data = pair,
-    });
+    };
 }

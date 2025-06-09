@@ -6,10 +6,6 @@ pub fn Success(comptime T: type) type {
         status: u16 = 200,
         message: []const u8,
         data: T,
-
-        pub fn with(self: Self) Self {
-            return self;
-        }
     };
 }
 pub fn Error(comptime T: type) type {

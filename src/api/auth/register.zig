@@ -14,10 +14,10 @@ const RegisterDTO = struct {
 
 pub fn register(config: Config, pool: *pg.Pool, data: RegisterDTO) !Success(?u8) {
     try registerInternal(pool, config.app.round_hashing, data);
-    return .with(.{
+    return .{
         .message = "Register sucessful!",
         .data = null,
-    });
+    };
 }
 fn registerInternal(p: *pg.Pool, round_hashing: u6, data: RegisterDTO) !void {
     var buf: [std.crypto.pwhash.bcrypt.hash_length * 2]u8 = undefined;

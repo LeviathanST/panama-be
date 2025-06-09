@@ -30,10 +30,10 @@ pub fn login(
         config.app.rt_secret,
         data.username,
     );
-    return .with(.{
+    return .{
         .message = "Login successful",
         .data = pair,
-    });
+    };
 }
 
 fn loginInternal(alloc: std.mem.Allocator, pool: *pg.Pool, data: LoginDTO) !void {
