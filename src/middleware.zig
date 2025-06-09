@@ -16,7 +16,7 @@ pub const Auth = struct {
     pub fn @"fn"(ctx: *tk.Context) anyerror!Data {
         const p = try ctx.injector.get(*pg.Pool);
         const map = try ctx.injector.get(*std.StringHashMap([]const u8));
-        const config = try ctx.injector.get(*Config);
+        const config = try ctx.injector.get(Config);
 
         const header = ctx.req.header("authorization") orelse return Error.Unauthorized;
         var splits = std.mem.splitScalar(u8, header, ' ');
@@ -35,3 +35,22 @@ pub const Auth = struct {
         };
     }
 };
+pub fn cors() tk.Route {
+    const H = struct {
+        fn handleCors(ctx: *tk.Context) anyerror!void {
+            ctx.res.header("access-control-allow-origin", ctx.req.header("origin") orelse "*");
+
+            if (ctx.req.method == .OPTIONS and ctx.req.header("access-control-request-method") != null) {
+                ctx.res.header("access-control-allow-methods", "GET, POST, PUT, DELETE, OPTIONS");
+                ctx.res.header("access-control-allow-headers", "content-type, authorization");
+                ctx.res.header("access-control-allow-private-network", "true");
+                ctx.res.status = 200;
+                return ctx.send(void{});
+            }
+        }
+    };
+
+    return .{
+        .handler = H.handleCors,
+    };
+}

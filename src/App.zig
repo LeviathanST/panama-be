@@ -1,7 +1,6 @@
 const std = @import("std");
 const tk = @import("tokamak");
 const response = @import("response");
-const zenv = @import("zenv");
 const pg = @import("pg");
 
 const util = @import("util.zig");
@@ -13,14 +12,17 @@ const Config = @import("Config.zig");
 server: tk.Server,
 pool: pg.Pool,
 routes: []const tk.Route = &.{
-    .group("/api", &.{
-        .router(api.UnProtected),
-        .provide(
-            mw.Auth.@"fn",
-            &.{
-                .router(api.Protected),
-            },
-        ),
+    .group("", &.{
+        mw.cors(),
+        .group("/api", &.{
+            .router(api.UnProtected),
+            .provide(
+                mw.Auth.@"fn",
+                &.{
+                    .router(api.Protected),
+                },
+            ),
+        }),
     }),
     .get("/openapi.json", tk.swagger.json(.{ .info = .{ .title = "Panama API", .version = "0.0.1" } })),
     .get("/swagger-ui", tk.swagger.ui(.{ .url = "openapi.json" })),
@@ -34,6 +36,10 @@ pub fn initServer(ct: *tk.Container, routes: []const tk.Route, config: Config) !
         .listen = .{
             .hostname = "0.0.0.0",
             .port = config.app.port,
+        },
+        .request = .{
+            .max_body_size = 1000000000,
+            .max_form_count = 20,
         },
     });
 }
@@ -50,10 +56,23 @@ pub fn initPool(ct: *tk.Container, config: *Config) !pg.Pool {
         },
     })).*;
 }
+pub fn afterBundleInit(pool: *pg.Pool) void {
+    // tokamak use passed-by-value
+    // to initialize all fields in App
+    // if using initXxx().
+    // Conns in pool point to address its owner,
+    // so we need reassgin it here.
+    for (pool._conns) |conn| {
+        conn._pool = pool;
+    }
+}
 
 const GeneralError = error{ ParamEmpty, InvalidInput };
 const AuthError = mw.Auth.Error;
 const UserError = model.User;
+const ImageError = model.Image;
+const VideoError = model.Video;
+const ProjectError = model.Project;
 const LoginError = api.LoginError;
 const TokenError = util.TokenError;
 
@@ -69,9 +88,18 @@ const error_mappings = [_]ErrorMapping{
     .{ .err = AuthError.Unauthorized, .status = 401, .message = "You not have permissions!" },
 
     .{ .err = UserError.FindError.UserNotFound, .status = 400, .message = "User not found!" },
-    .{ .err = UserError.InsertError.UserExisted, .status = 400, .message = "User is existed" },
+    .{ .err = UserError.InsertError.UserExisted, .status = 400, .message = "User is existed!" },
 
-    .{ .err = LoginError.WrongPassword, .status = 400, .message = "Wrong password" },
+    .{ .err = ProjectError.FindError.ProjectNotFound, .status = 400, .message = "Project not found!" },
+    .{ .err = api.InsertProjectError.AtLeastOne, .status = 400, .message = "Please insert a project with at least one video or image!" },
+    // We need to avoid these errors
+    .{ .err = ImageError.InsertError.ImageUrlExisted, .status = 400, .message = "Image URL is existed!" },
+    .{ .err = ImageError.InsertError.ImageUrlInProjectExisted, .status = 400, .message = "Image URL is existed in project!" },
+    .{ .err = VideoError.InsertError.VideoUrlExisted, .status = 400, .message = "Video URL is existed!" },
+    .{ .err = VideoError.InsertError.VideoUrlInProjectExisted, .status = 400, .message = "Video URL is existed in project!" },
+    //
+
+    .{ .err = LoginError.WrongPassword, .status = 400, .message = "Wrong password!" },
 
     .{ .err = TokenError.InvalidToken, .status = 400, .message = "Invalid token!" },
     .{ .err = TokenError.ExpiredToken, .status = 400, .message = "Expired token!" },
