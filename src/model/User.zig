@@ -12,7 +12,7 @@ password: []const u8,
 
 pub fn insert(pool: *Pool, username: []const u8, password: []const u8) !void {
     const conn = try pool.acquire();
-    defer conn.deinit();
+    defer conn.release();
 
     _ = conn.exec(
         \\ INSERT INTO "user" (username, password)
@@ -28,7 +28,7 @@ pub fn insert(pool: *Pool, username: []const u8, password: []const u8) !void {
 
 pub fn findIdByUsername(pool: *Pool, username: []const u8) !i32 {
     const conn = try pool.acquire();
-    defer conn.deinit();
+    defer conn.release();
 
     var row = conn.row(
         \\ SELECT id FROM "user" WHERE username = $1
@@ -38,13 +38,13 @@ pub fn findIdByUsername(pool: *Pool, username: []const u8) !i32 {
         }
         return err;
     } orelse return FindError.UserNotFound;
-    defer row.deinit() catch unreachable;
+    defer row.deinit() catch @panic("Error when deinit row");
     return row.getCol(i32, "id");
 }
 
 pub fn findByUsername(alloc: std.mem.Allocator, pool: *Pool, username: []const u8) !Self {
     const conn = try pool.acquire();
-    defer conn.deinit();
+    defer conn.release();
 
     var row = conn.row(
         \\ SELECT * FROM "user" WHERE username = $1
@@ -54,7 +54,7 @@ pub fn findByUsername(alloc: std.mem.Allocator, pool: *Pool, username: []const u
         }
         return err;
     } orelse return FindError.UserNotFound;
-    defer row.deinit() catch unreachable;
+    defer row.deinit() catch @panic("Error when deinit row");
 
     const user = try row.to(Self, .{ .map = .name, .allocator = alloc });
     return user;
