@@ -2,6 +2,13 @@ const login = @import("api/auth/login.zig");
 const register = @import("api/auth/register.zig");
 const refresh = @import("api/auth/refresh.zig");
 
+const createProject = @import("api/project/create.zig");
+const createProjectFn = createProject.create;
+const findProject = @import("api/project/find.zig").find;
+const deleteProject = @import("api/project/delete.zig").delete;
+const updateProject = @import("api/project/update.zig").update;
+
+pub const InsertProjectError = createProject.Error;
 pub const LoginError = login.Error;
 
 pub const UnProtected = struct {
@@ -13,4 +20,9 @@ pub const UnProtected = struct {
 
 pub const Protected = struct {
     pub const @"GET /verify" = @import("api/auth/verify.zig").verify;
+
+    pub const @"POST /projects" = createProjectFn;
+    pub const @"DELETE /projects/:id" = deleteProject;
+    pub const @"PUT /projects/:id" = updateProject;
+    pub const @"GET /projects/:id" = findProject;
 };
