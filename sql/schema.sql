@@ -1,8 +1,8 @@
-CREATE TYPE cate AS ENUM('VISUAL_STAGE', '3D_MAPPING', 'INTERACT_DANCE', 'HOLOGRAM');
-CREATE TABLE IF NOT EXISTS "user" (
-id                          SERIAL PRIMARY KEY,
-username                    VARCHAR(25) UNIQUE NOT NULL,
-password                    VARCHAR(255) NOT NULL
+CREATE TYPE cate AS ENUM('PANAMA_VISUAL', '3D_MAPPING', 'INTERACT_DANCE', 'HOLOGRAM');
+CREATE TABLE IF NOT EXISTS "user"(
+    id                       SERIAL PRIMARY KEY,
+    username                 VARCHAR(25) UNIQUE NOT NULL,
+    password                 VARCHAR(255) NOT NULL
 );
 CREATE TABLE IF NOT EXISTS project(
     id                      SERIAL PRIMARY KEY,
