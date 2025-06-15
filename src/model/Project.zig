@@ -1,6 +1,7 @@
 const std = @import("std");
 const pg = @import("pg");
 
+const base_type = @import("base_type");
 const Image = @import("Image.zig");
 const Video = @import("Video.zig");
 
@@ -14,13 +15,53 @@ description: []const u8,
 category: []const u8,
 time: ?[]const u8,
 
+pub fn getAll(pool: *pg.Pool, alloc: std.mem.Allocator) !std.ArrayList(base_type.ProjectResponse) {
+    const conn = try pool.acquire();
+    defer conn.release();
+
+    const rs = conn.queryOpts(
+        \\ SELECT * FROM project 
+    , .{}, .{ .allocator = alloc }) catch |err| {
+        if (conn.err) |pg_err| {
+            std.log.err("{s}", .{pg_err.message});
+        }
+        return err;
+    };
+    defer rs.deinit();
+
+    var list = std.ArrayList(base_type.ProjectResponse).init(alloc);
+    errdefer list.deinit();
+
+    while (try rs.next()) |row| {
+        const inst = try row.to(Self, .{ .allocator = alloc, .map = .name });
+        var images = try Image.findManyByProjectId(alloc, pool, inst.id);
+        const video: ?base_type.VideoResponse = v: {
+            if (try Video.findByProjectId(alloc, pool, inst.id)) |vi| {
+                break :v .{
+                    .url = vi.url,
+                    .thumbnail = vi.thumbnail,
+                };
+            } else break :v null;
+        };
+        try list.append(.{
+            .id = inst.id,
+            .title = inst.title,
+            .description = inst.description,
+            .category = inst.category,
+            .time = inst.time,
+            .images = try images.toOwnedSlice(),
+            .video = video,
+        });
+    }
+    return list;
+}
 pub fn insert(
     p: *pg.Pool,
     title: []const u8,
     description: []const u8,
     category: []const u8,
     time: ?[]const u8,
-    images: []Image.BaseType,
+    images: [][]const u8,
     video: ?Video.BaseType,
 ) !void {
     const conn = try p.acquire();
@@ -54,10 +95,10 @@ pub fn insert(
 
     // TODO: We can run parallel here
     for (images) |image| {
-        try Image.insertWithProject(conn, project_id, image.url);
+        try Image.insertWithProject(conn, project_id, image);
     }
     if (video) |v| {
-        try Video.insertWithProject(conn, project_id, v.url, v.thumbnail);
+        try Video.insertWithProject(conn, project_id, v.video_url, v.thumbnail_url);
     }
 
     try conn.commit();
