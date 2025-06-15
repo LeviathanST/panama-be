@@ -10,10 +10,7 @@ const Project = @import("Project.zig");
 
 pub const FindError = Project.FindError;
 pub const InsertError = error{ ImageUrlExisted, ImageUrlInProjectExisted };
-pub const BaseType = struct {
-    url: []const u8,
-    media: tk.FormData,
-};
+pub const BaseType = []const u8;
 const Self = @This();
 
 id: i32,

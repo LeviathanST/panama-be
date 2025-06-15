@@ -9,10 +9,8 @@ const pg = @import("pg");
 
 pub const InsertError = error{ VideoUrlExisted, VideoUrlInProjectExisted };
 pub const BaseType = struct {
-    url: []const u8,
-    thumbnail: []const u8,
-    video_media: FormData,
-    thumbnail_media: FormData,
+    video_url: []const u8,
+    thumbnail_url: []const u8,
 };
 const Project = @import("Project.zig");
 const Self = @This();
@@ -64,7 +62,7 @@ pub fn deleteWithProject(conn: *pg.Conn, project_id: i32) !void {
         }
         return err;
     } orelse return; // ignore video id is null
-    defer video_id_row.deinit() catch {};
+    defer video_id_row.deinit() catch @panic("Error when select video id");
 
     const video_id = video_id_row.getCol(i32, "video_id");
     _ = conn.exec(
@@ -92,7 +90,7 @@ pub fn findByProjectId(alloc: std.mem.Allocator, pool: *pg.Pool, project_id: i32
         }
         return err;
     } orelse return null;
-    defer row.deinit() catch {};
+    defer row.deinit() catch @panic("Error when select video");
 
     const self = try row.to(Self, .{ .map = .name, .allocator = alloc });
     return self;
@@ -121,6 +119,6 @@ pub fn updateWithProject(
         };
     }
     if (inserted_video) |video| {
-        try insertWithProject(conn, project_id, video.url, video.thumbnail);
+        try insertWithProject(conn, project_id, video.video_url, video.thumbnail_url);
     }
 }
