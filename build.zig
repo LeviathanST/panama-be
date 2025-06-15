@@ -33,7 +33,6 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     }).module("uuid");
     const jwt = b.dependency("zig_jwt", .{}).module("zig-jwt");
-    const zig_s3 = b.dependency("zig_s3", .{}).module("s3");
 
     const modules = [_][]const u8{ "response", "model" };
     const base_type = b.addModule("base_type", .{
@@ -50,7 +49,6 @@ pub fn build(b: *std.Build) void {
                 .{ .name = "zenv", .module = zenv },
                 .{ .name = "zig-jwt", .module = jwt },
                 .{ .name = "uuid", .module = uuid },
-                .{ .name = "s3", .module = zig_s3 },
                 .{ .name = "base_type", .module = base_type },
             },
         }));
@@ -60,7 +58,6 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("pg", pg);
     exe.root_module.addImport("zig-jwt", jwt);
     exe.root_module.addImport("uuid", uuid);
-    exe.root_module.addImport("s3", zig_s3);
     exe.root_module.addImport("base_type", base_type);
     run_step.dependOn(&run_exe.step);
 }
