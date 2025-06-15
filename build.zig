@@ -36,6 +36,11 @@ pub fn build(b: *std.Build) void {
     const zig_s3 = b.dependency("zig_s3", .{}).module("s3");
 
     const modules = [_][]const u8{ "response", "model" };
+    const base_type = b.addModule("base_type", .{
+        .root_source_file = b.path("src/base_type.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
     inline for (modules) |m| {
         exe.root_module.addImport(m, b.addModule(m, .{
             .root_source_file = b.path("src/" ++ m ++ ".zig"),
@@ -46,6 +51,7 @@ pub fn build(b: *std.Build) void {
                 .{ .name = "zig-jwt", .module = jwt },
                 .{ .name = "uuid", .module = uuid },
                 .{ .name = "s3", .module = zig_s3 },
+                .{ .name = "base_type", .module = base_type },
             },
         }));
     }
@@ -55,5 +61,6 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("zig-jwt", jwt);
     exe.root_module.addImport("uuid", uuid);
     exe.root_module.addImport("s3", zig_s3);
+    exe.root_module.addImport("base_type", base_type);
     run_step.dependOn(&run_exe.step);
 }
