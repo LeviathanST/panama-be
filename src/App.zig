@@ -7,10 +7,14 @@ const util = @import("util.zig");
 const model = @import("model");
 const mw = @import("middleware.zig");
 const api = @import("api.zig");
+
 const Config = @import("Config.zig");
+
+const Self = @This();
 
 server: tk.Server,
 pool: pg.Pool,
+arena: std.heap.ArenaAllocator,
 routes: []const tk.Route = &.{
     .group("", &.{
         mw.cors(),
@@ -28,8 +32,14 @@ routes: []const tk.Route = &.{
     .get("/swagger-ui", tk.swagger.ui(.{ .url = "openapi.json" })),
 },
 config: Config,
-/// Using to check valid token
 token_fingerprints: std.StringHashMap([]const u8),
+
+pub fn initArena() std.heap.ArenaAllocator {
+    return std.heap.ArenaAllocator.init(std.heap.page_allocator);
+}
+pub fn iniTokenFingerprints(arena: std.heap.ArenaAllocator) std.StringHashMap([]const u8) {
+    return std.StringHashMap([]const u8).init(arena.allocator());
+}
 
 pub fn initServer(ct: *tk.Container, routes: []const tk.Route, config: Config) !tk.Server {
     return try tk.app.Base.initServer(ct, routes, .{
@@ -38,8 +48,9 @@ pub fn initServer(ct: *tk.Container, routes: []const tk.Route, config: Config) !
             .port = config.app.port,
         },
         .request = .{
-            .max_body_size = 1000000000,
-            .max_form_count = 20,
+            .lazy_read_size = 1024 * 1024 * 2, // 2mb
+            .max_body_size = 1_000_000_000, // 1gb
+            .max_multiform_count = 10,
         },
     });
 }
@@ -66,8 +77,12 @@ pub fn afterBundleInit(pool: *pg.Pool) void {
         conn._pool = pool;
     }
 }
+pub fn deinit(self: *Self) void {
+    self.token_fingerprints.deinit();
+    self.arena.deinit();
+}
 
-const GeneralError = error{ ParamEmpty, InvalidInput };
+pub const GeneralError = error{ ParamEmpty, InvalidHeader };
 const AuthError = mw.Auth.Error;
 const UserError = model.User;
 const ImageError = model.Image;
@@ -83,7 +98,7 @@ const ErrorMapping = struct {
 };
 const error_mappings = [_]ErrorMapping{
     .{ .err = GeneralError.ParamEmpty, .status = 400, .message = "Request params empty!" },
-    .{ .err = GeneralError.InvalidInput, .status = 400, .message = "Invalid input provided!" },
+    .{ .err = GeneralError.InvalidHeader, .status = 400, .message = "Invalid header!" },
 
     .{ .err = AuthError.Unauthorized, .status = 401, .message = "You not have permissions!" },
 
@@ -98,7 +113,6 @@ const error_mappings = [_]ErrorMapping{
     .{ .err = VideoError.InsertError.VideoUrlExisted, .status = 400, .message = "Video URL is existed!" },
     .{ .err = VideoError.InsertError.VideoUrlInProjectExisted, .status = 400, .message = "Video URL is existed in project!" },
     //
-
     .{ .err = LoginError.WrongPassword, .status = 400, .message = "Wrong password!" },
 
     .{ .err = TokenError.InvalidToken, .status = 400, .message = "Invalid token!" },

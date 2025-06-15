@@ -17,14 +17,14 @@ const LoginDTO = struct {
 
 pub fn login(
     token_fingerprints: *std.StringHashMap([]const u8),
-    req: tk.Request,
+    arena: *std.heap.ArenaAllocator,
     config: Config,
     pool: *pg.Pool,
     data: LoginDTO,
 ) !Success(Pair) {
-    try loginInternal(req.arena, pool, data);
+    try loginInternal(arena.allocator(), pool, data);
     const pair = try util.token.generate(
-        req.arena,
+        arena.allocator(),
         token_fingerprints,
         config.app.at_secret,
         config.app.rt_secret,
