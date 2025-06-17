@@ -19,32 +19,49 @@ const ErrorMapping = struct {
     err: anyerror,
     status: u16,
     message: []const u8,
+
+    pub fn bad_request(err: anyerror, message: []const u8) ErrorMapping {
+        return .{
+            .err = err,
+            .status = 400,
+            .message = message,
+        };
+    }
+
+    pub fn unauthorized(err: anyerror, message: []const u8) ErrorMapping {
+        return .{
+            .err = err,
+            .status = 401,
+            .message = message,
+        };
+    }
 };
+
 const error_mappings = [_]ErrorMapping{
-    .{ .err = GeneralError.ParamEmpty, .status = 400, .message = "Request params empty!" },
-    .{ .err = GeneralError.InvalidHeader, .status = 400, .message = "Invalid header!" },
+    .bad_request(GeneralError.ParamEmpty, "Request params empty!"),
+    .bad_request(GeneralError.InvalidHeader, "Invalid header!"),
 
-    .{ .err = AuthError.Unauthorized, .status = 401, .message = "You not have permissions!" },
+    .unauthorized(AuthError.Unauthorized, "You not have permissions!"),
 
-    .{ .err = UserError.FindError.UserNotFound, .status = 400, .message = "User not found!" },
-    .{ .err = UserError.InsertError.UserExisted, .status = 400, .message = "User is existed!" },
+    .bad_request(UserError.FindError.UserNotFound, "User not found!"),
+    .bad_request(UserError.InsertError.UserExisted, "User is existed!"),
 
-    .{ .err = ProjectError.FindError.ProjectNotFound, .status = 400, .message = "Project not found!" },
-    .{ .err = api.InsertProjectError.AtLeastOne, .status = 400, .message = "Please insert a project with at least one video or image!" },
+    .bad_request(ProjectError.FindError.ProjectNotFound, "Project not found!"),
+    .bad_request(api.InsertProjectError.AtLeastOne, "Please insert a project with at least one video or image!"),
+
     // We need to avoid these errors
-    .{ .err = ImageError.InsertError.ImageUrlExisted, .status = 400, .message = "Image URL is existed!" },
-    .{ .err = ImageError.InsertError.ImageUrlInProjectExisted, .status = 400, .message = "Image URL is existed in project!" },
-    .{ .err = VideoError.InsertError.VideoUrlExisted, .status = 400, .message = "Video URL is existed!" },
-    .{ .err = VideoError.InsertError.VideoUrlInProjectExisted, .status = 400, .message = "Video URL is existed in project!" },
+    .bad_request(ImageError.InsertError.ImageUrlExisted, "Image URL is existed!"),
+    .bad_request(ImageError.InsertError.ImageUrlInProjectExisted, "Image URL is existed in project!"),
+    .bad_request(VideoError.InsertError.VideoUrlExisted, "Video URL is existed!"),
+    .bad_request(VideoError.InsertError.VideoUrlInProjectExisted, "Video URL is existed in project!"),
     //
-    .{ .err = LoginError.WrongPassword, .status = 400, .message = "Wrong password!" },
+    .bad_request(LoginError.WrongPassword, "Wrong password!"),
 
-    .{ .err = TokenError.InvalidToken, .status = 400, .message = "Invalid token!" },
-    .{ .err = TokenError.ExpiredToken, .status = 400, .message = "Expired token!" },
-    .{ .err = TokenError.JWTAlgoInvalid, .status = 400, .message = "Invalid token!" },
-    .{ .err = TokenError.JWTSigningMethodNotExists, .status = 400, .message = "Invalid token!" },
-    .{ .err = TokenError.JWTTypeInvalid, .status = 400, .message = "Invalid token!" },
-    .{ .err = TokenError.JWTVerifyFail, .status = 400, .message = "Invalid token!" },
+    .bad_request(TokenError.ExpiredToken, "Expired token!"),
+    .bad_request(TokenError.InvalidToken, "Invalid token!"),
+    .bad_request(TokenError.JWTSigningMethodNotExists, "Invalid token!"),
+    .bad_request(TokenError.JWTTypeInvalid, "Invalid token!"),
+    .bad_request(TokenError.JWTVerifyFail, "Invalid token!"),
 };
 
 pub fn handler(ctx: *tk.Context, err: anyerror) !void {
