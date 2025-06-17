@@ -41,7 +41,9 @@ pub fn generate(
         .iat = std.time.timestamp(),
     };
 
-    try fingerprints_map.put(username, fp);
+    std.log.debug("Generate token for user {s}!", .{username});
+    std.log.debug("Fingerprint {s}", .{fp});
+    try fingerprints_map.put(try alloc.dupe(u8, username), fp);
     const s = jwt.SigningMethodHS256.init(alloc);
     const at = try s.sign(a_claims, at_secret);
     const rt = try s.sign(r_claims, rt_secret);
@@ -69,12 +71,17 @@ pub fn verify(
     t: []const u8,
     valid_type: ValidType,
 ) !Claims {
+    std.log.debug("Number of fg {d}", .{fingerprints_map.count()});
+    var iter = fingerprints_map.iterator();
+    while (iter.next()) |entry| {
+        std.log.debug("{s} - {s}", .{ entry.key_ptr.*, entry.value_ptr.* });
+    }
     const s = jwt.SigningMethodHS256.init(alloc);
     const token = try s.parse(t, secret);
     const parsed = try isValid(alloc, token, valid_type);
-    std.log.info("username {s}", .{parsed.username});
+    std.log.debug("User `{s}` verify token: {s}", .{ parsed.username, t });
     const fingerprint = fingerprints_map.get(parsed.username) orelse return Error.InvalidToken;
-    std.log.info("finger {s}", .{fingerprint});
+    std.log.debug("Fingerprint from token: {s}", .{parsed.fingerprint});
     if (!std.mem.eql(u8, fingerprint, parsed.fingerprint)) return Error.InvalidToken;
     return parsed;
 }

@@ -10,20 +10,20 @@ const RefreshDTO = struct {
 };
 // TODO: This route is not works in swagger
 pub fn refresh(
-    req: tk.Request,
+    arena: *std.heap.ArenaAllocator,
     token_fingerprints: *std.StringHashMap([]const u8),
     config: Config,
     data: RefreshDTO,
 ) !Success(token.Pair) {
     const pair = try token.refresh(
-        req.arena,
+        arena.allocator(),
         token_fingerprints,
         data.rt,
         config.app.at_secret,
         config.app.rt_secret,
     );
-    return .with(.{
+    return .{
         .message = "Refresh token successful!",
         .data = pair,
-    });
+    };
 }

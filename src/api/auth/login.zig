@@ -16,24 +16,24 @@ const LoginDTO = struct {
 };
 
 pub fn login(
-    req: tk.Request,
     token_fingerprints: *std.StringHashMap([]const u8),
+    arena: *std.heap.ArenaAllocator,
     config: Config,
-    p: *pg.Pool,
+    pool: *pg.Pool,
     data: LoginDTO,
 ) !Success(Pair) {
-    try loginInternal(req.arena, p, data);
+    try loginInternal(arena.allocator(), pool, data);
     const pair = try util.token.generate(
-        req.arena,
+        arena.allocator(),
         token_fingerprints,
         config.app.at_secret,
         config.app.rt_secret,
         data.username,
     );
-    return .with(.{
+    return .{
         .message = "Login successful",
         .data = pair,
-    });
+    };
 }
 
 fn loginInternal(alloc: std.mem.Allocator, pool: *pg.Pool, data: LoginDTO) !void {

@@ -1,7 +1,5 @@
 const std = @import("std");
 const zenv = @import("zenv");
-const tk = @import("tokamak");
-const pg = @import("pg");
 
 const Config = @This();
 
