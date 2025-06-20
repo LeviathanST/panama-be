@@ -6,7 +6,7 @@ const pg = @import("pg");
 const util = @import("util.zig");
 const model = @import("model");
 const mw = @import("middleware.zig");
-const api = @import("api.zig");
+const api = @import("api");
 const @"error" = @import("error.zig");
 
 const Config = @import("Config.zig");

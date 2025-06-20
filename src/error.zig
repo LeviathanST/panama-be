@@ -3,7 +3,7 @@ const tk = @import("tokamak");
 const mw = @import("middleware.zig");
 const model = @import("model");
 const response = @import("response");
-const api = @import("api.zig");
+const api = @import("api");
 const util = @import("util.zig");
 
 pub const GeneralError = error{ ParamEmpty, InvalidHeader };
