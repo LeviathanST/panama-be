@@ -1,12 +1,11 @@
 const std = @import("std");
 const tk = @import("tokamak");
-const response = @import("response");
 const pg = @import("pg");
 
 const util = @import("util.zig");
-const model = @import("model");
+const model = @import("model.zig");
 const mw = @import("middleware.zig");
-const api = @import("api");
+const api = @import("api.zig");
 const @"error" = @import("error.zig");
 
 const Config = @import("Config.zig");
@@ -14,7 +13,7 @@ const Config = @import("Config.zig");
 const Self = @This();
 
 server: tk.Server,
-pool: pg.Pool,
+server_opts: tk.ServerOptions,
 arena: std.heap.ArenaAllocator,
 routes: []const tk.Route = &.{
     .group("", &.{
@@ -35,6 +34,23 @@ routes: []const tk.Route = &.{
 config: Config,
 token_fingerprints: std.StringHashMap([]const u8),
 
+pub fn configure(bundle: *tk.Bundle) void {
+    bundle.add(pg.Pool, .factory(initPool));
+    bundle.addOverride(tk.ServerOptions, .factory(initServerOpts));
+
+    bundle.addDeinitHook(cleanPool);
+    bundle.addInitHook(notiServer);
+    bundle.addInitHook(reassignConnPool);
+}
+
+fn cleanPool(pool: *pg.Pool) void {
+    pool.deinit();
+}
+
+fn notiServer(config: Config) void {
+    std.log.info("Server running on {d}", .{config.app.port});
+}
+
 pub fn initArena() std.heap.ArenaAllocator {
     return std.heap.ArenaAllocator.init(std.heap.page_allocator);
 }
@@ -42,8 +58,8 @@ pub fn iniTokenFingerprints(arena: std.heap.ArenaAllocator) std.StringHashMap([]
     return std.StringHashMap([]const u8).init(arena.allocator());
 }
 
-pub fn initServer(ct: *tk.Container, routes: []const tk.Route, config: Config) !tk.Server {
-    return try tk.app.Base.initServer(ct, routes, .{
+pub fn initServerOpts(config: Config) !tk.ServerOptions {
+    return .{
         .listen = .{
             .hostname = "0.0.0.0",
             .port = config.app.port,
@@ -53,11 +69,11 @@ pub fn initServer(ct: *tk.Container, routes: []const tk.Route, config: Config) !
             .max_body_size = 1_000_000_000, // 1gb
             .max_multiform_count = 10,
         },
-        .error_handler = @"error".handler,
-    });
+    };
 }
-pub fn initPool(ct: *tk.Container, config: *Config) !pg.Pool {
-    return (try pg.Pool.init(ct.allocator, .{
+
+pub fn initPool(ct: *tk.Container, config: Config) !pg.Pool {
+    const pool = try pg.Pool.init(ct.allocator, .{
         .auth = .{
             .username = config.db.username,
             .password = config.db.password,
@@ -67,9 +83,12 @@ pub fn initPool(ct: *tk.Container, config: *Config) !pg.Pool {
             .host = config.db.host,
             .port = config.db.port,
         },
-    })).*;
+    });
+    errdefer pool.deinit();
+    return pool.*;
 }
-pub fn afterBundleInit(pool: *pg.Pool) void {
+
+fn reassignConnPool(pool: *pg.Pool) void {
     // tokamak use passed-by-value
     // to initialize all fields in App
     // if using initXxx().
