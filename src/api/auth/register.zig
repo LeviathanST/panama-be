@@ -1,8 +1,8 @@
 const std = @import("std");
 const pg = @import("pg");
 
-const User = @import("model").User;
-const Success = @import("response").Success;
+const User = @import("../../model.zig").User;
+const Success = @import("../../response.zig").Success;
 const Config = @import("../../Config.zig");
 
 pub const Error = User.InsertError;
@@ -12,7 +12,7 @@ const RegisterDTO = struct {
     password: []const u8,
 };
 
-pub fn register(config: Config, pool: *pg.Pool, data: RegisterDTO) !Success(?u8) {
+pub fn register(pool: *pg.Pool, config: Config, data: RegisterDTO) !Success(?u8) {
     try registerInternal(pool, config.app.round_hashing, data);
     return .{
         .message = "Register sucessful!",

@@ -2,15 +2,14 @@ const std = @import("std");
 const pg = @import("pg");
 const tk = @import("tokamak");
 const api = @import("../../api.zig");
-const model = @import("model");
-const base_type = @import("base_type");
+const model = @import("../../model.zig");
+const base_type = @import("../../base_type.zig");
 
 const Project = model.Project;
 const Image = model.Image;
 const Video = model.Video;
 
-const Success = @import("response").Success;
-
+const Success = @import("../../response.zig").Success;
 pub fn find(alloc: std.mem.Allocator, pool: *pg.Pool, id: i32) !Success(base_type.ProjectResponse) {
     const project = try Project.find(alloc, pool, id);
     var images = try Image.findManyByProjectId(alloc, pool, id);

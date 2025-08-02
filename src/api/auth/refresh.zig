@@ -2,7 +2,7 @@ const std = @import("std");
 const tk = @import("tokamak");
 const token = @import("../../util.zig").token;
 
-const Success = @import("response").Success;
+const Success = @import("../../response.zig").Success;
 const Config = @import("../../Config.zig");
 
 const RefreshDTO = struct {

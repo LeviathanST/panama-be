@@ -1,11 +1,11 @@
 const std = @import("std");
 const tk = @import("tokamak");
-const Success = @import("response").Success;
 const pg = @import("pg");
 const util = @import("../../util.zig");
 
 const Pair = util.token.Pair;
-const User = @import("model").User;
+const Success = @import("../../response.zig").Success;
+const User = @import("../../model.zig").User;
 const Config = @import("../../Config.zig");
 
 pub const Error = error{WrongPassword};
