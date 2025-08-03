@@ -4,23 +4,23 @@
     .fingerprint = 0xfd014afcc04a1cd1,
     .dependencies = .{
         .tokamak = .{
-            .url = "git+https://github.com/LeviathanST/tokamak?ref=update/http-client#da6070f96bb0ad4c440df52721ba839ca9445610",
-            .hash = "tokamak-2.0.0-FbnSeVI2AwC1W-H9ZBUhV407KdOdAMnNuacltF2b_7--",
+            .url = "git+https://github.com/cztomsik/tokamak#a2bc37a3b775317f706ea2ba80678d81c3cb1702",
+            .hash = "tokamak-2.0.0-FbnSeb0VBQBAOGkxul1pEDYP17AJPQFZqukzP4St18Jk",
         },
         .zenv = .{
-            .url = "git+https://github.com/zig-space/zenv?ref=master#b00ee934a058417475917ac5f8275af6894b2d16",
-            .hash = "zenv-0.0.0-hX4COQUuAAAdvLBXuB4c2qhKnVH7ZwSXu7hINqk1SDIp",
+            .url = "git+https://github.com/zig-space/zenv?ref=0.14.1#4acc8d9772fd23c5cb3421325e8086899333b526",
+            .hash = "zenv-0.0.0-hX4COQ86AAAPYkB1m-EMoGV-W3EZoR3wPIB-HlzrAn2i",
         },
         .pg = .{
-            .url = "git+https://github.com/karlseguin/pg.zig?ref=master#b457f000be272bc9939949d6a8329b6da7aa9b12",
-            .hash = "pg-0.0.0-Wp_7gQkCBgDw1-q7u6sIhQHD52pxZZJ0V6SHU0Y5jP2I",
+            .url = "git+https://github.com/karlseguin/pg.zig#2e90b7e93d08a4dd66dc4cee213dad082d5932fe",
+            .hash = "pg-0.0.0-Wp_7gTADBgCzt2PaHucq9iRV0a5gdXY5ADtKAOqS6uQS",
         },
         .zig_jwt = .{
-            .url = "git+https://github.com/deatil/zig-jwt?ref=main#7ed58ec897fa0fd05218999e452f9b345742e6d6",
-            .hash = "zig_jwt-1.2.0-w3q9SIMmBADyvPMoByJKup0vjhIvhk19rF8ZJdgPl3ne",
+            .url = "git+https://github.com/deatil/zig-jwt#ad414ac4be4b856fceb723356a803ee3393b687d",
+            .hash = "zig_jwt-1.2.11-w3q9SAo4BAC9hzVI3tmjGuqlPcQn0t92JWLYFCVnTP-S",
         },
         .uuid = .{
-            .url = "git+https://github.com/r4gus/uuid-zig?ref=master#9d66e23e32cd7208d1becb4fd9352f8a27f89551",
+            .url = "git+https://github.com/r4gus/uuid-zig#9d66e23e32cd7208d1becb4fd9352f8a27f89551",
             .hash = "uuid-0.3.0-oOieIYF1AAA_BtE7FvVqqTn5uEYTvvz7ycuVnalCOf8C",
         },
     },

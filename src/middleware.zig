@@ -3,7 +3,7 @@ const tk = @import("tokamak");
 const pg = @import("pg");
 const util = @import("util.zig");
 const Config = @import("Config.zig");
-const User = @import("model").User;
+const User = @import("model.zig").User;
 
 // TODO: Using role for authentication
 pub const Auth = struct {

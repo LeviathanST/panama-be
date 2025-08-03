@@ -1,6 +1,6 @@
 //!
 //! **All functions** ending in `withProject` are used to interact with the relationship between
-//! project and video, it gets `conn` as in transction and not to use `commit()`
+//! project and video, they get `conn` as in transction and not to use `commit()`
 //! or `release()` after finishing. The caller should call `rollback()` when error occurs.
 //!
 const std = @import("std");

@@ -1,7 +1,7 @@
 const std = @import("std");
 const pg = @import("pg");
-const model = @import("model");
-const Success = @import("response").Success;
+const model = @import("../../model.zig");
+const Success = @import("../../response.zig").Success;
 
 const UpdateDTO = struct {
     title: []const u8,

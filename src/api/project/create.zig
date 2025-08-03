@@ -1,11 +1,11 @@
 const std = @import("std");
 const tk = @import("tokamak");
 const pg = @import("pg");
-const model = @import("model");
+const model = @import("../../model.zig");
 const util = @import("../../util.zig");
 const Config = @import("../../Config.zig");
-const Success = @import("response").Success;
-const Project = @import("model").Project;
+const Success = @import("../../response.zig").Success;
+const Project = @import("../../model.zig").Project;
 
 pub const Error = error{AtLeastOne};
 const InsertDTO = struct {

@@ -5,7 +5,7 @@ const Config = @This();
 
 app: AppConfig,
 db: DBConfig,
-_reader: zenv.Reader,
+_reader: zenv.Term,
 
 pub const AppConfig = struct {
     port: u16,
@@ -24,16 +24,16 @@ pub const DBConfig = struct {
 };
 
 pub fn init(allocator: std.mem.Allocator) !Config {
-    const reader = try zenv.Reader.init(allocator, .TERM, .{});
-    errdefer reader.deinit();
-
+    var term = try zenv.Term.init(allocator);
+    errdefer term.deinit();
+    const reader = term.reader();
     const app = try reader.readStruct(AppConfig, .{});
     const db = try reader.readStruct(DBConfig, .{ .prefix = "DB_" });
 
     return .{
-        .app = app.*,
-        .db = db.*,
-        ._reader = reader,
+        .app = app,
+        .db = db,
+        ._reader = term,
     };
 }
 pub fn deinit(self: *Config) void {

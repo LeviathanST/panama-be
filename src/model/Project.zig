@@ -1,7 +1,7 @@
 const std = @import("std");
 const pg = @import("pg");
 
-const base_type = @import("base_type");
+const base_type = @import("../base_type.zig");
 const Image = @import("Image.zig");
 const Video = @import("Video.zig");
 
