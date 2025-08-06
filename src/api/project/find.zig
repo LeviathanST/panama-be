@@ -16,7 +16,7 @@ pub fn find(alloc: std.mem.Allocator, pool: *pg.Pool, id: i32) !Success(base_typ
     const raw_video = try Video.findByProjectId(alloc, pool, id);
     const video: ?base_type.VideoResponse = blk: {
         if (raw_video) |v| {
-            break :blk .{ .url = v.url, .thumbnail = v.thumbnail };
+            break :blk .{ .url = v.url };
         } else break :blk null;
     };
 
@@ -25,6 +25,7 @@ pub fn find(alloc: std.mem.Allocator, pool: *pg.Pool, id: i32) !Success(base_typ
         .data = .{
             .id = id,
             .title = project.title,
+            .thumbnail = project.thumbnail,
             .description = project.description,
             .category = project.category,
             .time = project.time,

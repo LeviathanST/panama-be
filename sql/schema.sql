@@ -7,9 +7,10 @@ CREATE TABLE IF NOT EXISTS "user"(
 CREATE TABLE IF NOT EXISTS project(
     id                      SERIAL PRIMARY KEY,
     title                   VARCHAR(255) NOT NULL,
+    thumbnail               VARCHAR(255) NOT NULL,
     description             VARCHAR(255) NOT NULL,
     category                cate NOT NULL,
-    TIME                    VARCHAR(60)
+    time                    VARCHAR(60)
 );
 CREATE TABLE IF NOT EXISTS image(
     id                  SERIAL PRIMARY KEY,
@@ -17,8 +18,7 @@ CREATE TABLE IF NOT EXISTS image(
 );
 CREATE TABLE IF NOT EXISTS video(
     id                  SERIAL PRIMARY KEY,
-    url                 VARCHAR(255) UNIQUE NOT NULL,
-    thumbnail           VARCHAR(255) NOT NULL
+    url                 VARCHAR(255) UNIQUE NOT NULL
 );
 CREATE TABLE IF NOT EXISTS image_project(
     project_id          SERIAL,
