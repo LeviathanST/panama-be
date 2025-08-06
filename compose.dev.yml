@@ -1,6 +1,7 @@
 services:
   app:
-    image: leviathanst/panama-be:latest
+    build:
+      context: .
     environment:
       PORT: ${PORT}
       CLIENT_URL: ${CLIENT_URL}
