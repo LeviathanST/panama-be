@@ -5,6 +5,7 @@ const Success = @import("../../response.zig").Success;
 
 const UpdateDTO = struct {
     title: []const u8,
+    thumbnail: []const u8,
     description: []const u8,
     category: []const u8,
     time: ?[]const u8,
@@ -19,6 +20,7 @@ pub fn update(pool: *pg.Pool, id: i32, data: UpdateDTO) !Success(?u8) {
         pool,
         id,
         data.title,
+        data.thumbnail,
         data.description,
         data.category,
         data.time,

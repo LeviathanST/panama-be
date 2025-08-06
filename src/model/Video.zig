@@ -10,21 +10,19 @@ const pg = @import("pg");
 pub const InsertError = error{ VideoUrlExisted, VideoUrlInProjectExisted };
 pub const BaseType = struct {
     video_url: []const u8,
-    thumbnail_url: []const u8,
 };
 const Project = @import("Project.zig");
 const Self = @This();
 
 id: i32,
 url: []const u8,
-thumbnail: []const u8,
 
-pub fn insertWithProject(conn: *pg.Conn, project_id: i32, url: []const u8, thumbnail: []const u8) !void {
+pub fn insertWithProject(conn: *pg.Conn, project_id: i32, url: []const u8) !void {
     var video_id_row = conn.row(
-        \\ INSERT INTO video (url, thumbnail)
-        \\ VALUES ($1, $2)
+        \\ INSERT INTO video (url)
+        \\ VALUES ($1)
         \\ RETURNING id
-    , .{ url, thumbnail }) catch |err| {
+    , .{url}) catch |err| {
         if (conn.err) |pg_err| {
             std.log.err("{s}", .{pg_err.message});
             if (pg_err.isUnique()) return InsertError.VideoUrlExisted;
@@ -119,6 +117,6 @@ pub fn updateWithProject(
         };
     }
     if (inserted_video) |video| {
-        try insertWithProject(conn, project_id, video.video_url, video.thumbnail_url);
+        try insertWithProject(conn, project_id, video.video_url);
     }
 }

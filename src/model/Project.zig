@@ -11,6 +11,7 @@ pub const FindError = error{ProjectNotFound};
 
 id: i32,
 title: []const u8,
+thumbnail: []const u8,
 description: []const u8,
 category: []const u8,
 time: ?[]const u8,
@@ -39,13 +40,13 @@ pub fn getAll(pool: *pg.Pool, alloc: std.mem.Allocator) !std.ArrayList(base_type
             if (try Video.findByProjectId(alloc, pool, inst.id)) |vi| {
                 break :v .{
                     .url = vi.url,
-                    .thumbnail = vi.thumbnail,
                 };
             } else break :v null;
         };
         try list.append(.{
             .id = inst.id,
             .title = inst.title,
+            .thumbnail = inst.thumbnail,
             .description = inst.description,
             .category = inst.category,
             .time = inst.time,
@@ -58,6 +59,7 @@ pub fn getAll(pool: *pg.Pool, alloc: std.mem.Allocator) !std.ArrayList(base_type
 pub fn insert(
     p: *pg.Pool,
     title: []const u8,
+    thumbnail: []const u8,
     description: []const u8,
     category: []const u8,
     time: ?[]const u8,
@@ -72,16 +74,16 @@ pub fn insert(
     var row = blk: {
         if (time) |t| {
             break :blk conn.row(
-                \\ INSERT INTO project (title, description, category, time) 
-                \\ VALUES ($1, $2, $3, $4)
+                \\ INSERT INTO project (title, thumbnail, description, category, time) 
+                \\ VALUES ($1, $2, $3, $4, $5)
                 \\ RETURNING id
-            , .{ title, description, category, t });
+            , .{ title, thumbnail, description, category, t });
         } else {
             break :blk conn.row(
-                \\ INSERT INTO project (title, description, category) 
-                \\ VALUES ($1, $2, $3)
+                \\ INSERT INTO project (title, thumbnail, description, category) 
+                \\ VALUES ($1, $2, $3, $4)
                 \\ RETURNING id
-            , .{ title, description, category });
+            , .{ title, thumbnail, description, category });
         }
     } catch |err| {
         if (conn.err) |pg_err| {
@@ -98,7 +100,7 @@ pub fn insert(
         try Image.insertWithProject(conn, project_id, image);
     }
     if (video) |v| {
-        try Video.insertWithProject(conn, project_id, v.video_url, v.thumbnail_url);
+        try Video.insertWithProject(conn, project_id, v.video_url);
     }
 
     try conn.commit();
@@ -157,6 +159,7 @@ pub fn update(
     pool: *pg.Pool,
     project_id: i32,
     title: []const u8,
+    thumbnail: []const u8,
     description: []const u8,
     category: []const u8,
     time: ?[]const u8,
@@ -177,17 +180,30 @@ pub fn update(
         if (time) |_| {
             break :blk conn.exec(
                 \\ UPDATE project
-                \\ SET (title, description, category, time)
-                \\   = ($1, $2, $3, $4)
-                \\ WHERE id = $5
-            , .{ title, description, category, time, project_id });
+                \\ SET (title, thumbnail, description, category, time)
+                \\   = ($1,    $2,       $3,          $4,       $5)
+                \\ WHERE id = $6
+            , .{
+                title,
+                thumbnail,
+                description,
+                category,
+                time,
+                project_id,
+            });
         } else {
             break :blk conn.exec(
                 \\ UPDATE project
-                \\ SET (title, description, category)
-                \\   = ($1, $2, $3)
-                \\ WHERE id = $4
-            , .{ title, description, category, project_id });
+                \\ SET (title, thumbnail, description, category)
+                \\   = ($1,    $2,        $3,          $4)
+                \\ WHERE id = $5
+            , .{
+                title,
+                thumbnail,
+                description,
+                category,
+                project_id,
+            });
         }
     } catch |err| {
         if (conn.err) |pg_err| {

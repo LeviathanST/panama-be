@@ -10,6 +10,7 @@ const Project = @import("../../model.zig").Project;
 pub const Error = error{AtLeastOne};
 const InsertDTO = struct {
     title: []const u8,
+    thumbnail: []const u8,
     description: []const u8,
     category: []const u8,
     time: ?[]const u8 = null,
@@ -22,6 +23,7 @@ pub fn create(p: *pg.Pool, data: InsertDTO) !Success(?u8) {
     try Project.insert(
         p,
         data.title,
+        data.thumbnail,
         data.description,
         data.category,
         data.time,
