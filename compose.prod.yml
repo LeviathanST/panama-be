@@ -18,7 +18,7 @@ services:
     ports:
       - ${PORT}:${PORT}
     networks:
-      - general
+      - be
   db: 
     image: postgres:17.5-alpine3.21
     environment:
@@ -37,7 +37,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - general
+      - be
   pgadmin:
     image: dpage/pgadmin4:latest
     environment:
@@ -53,10 +53,11 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
-      - general
+      - be
 
 networks:
-  general:
+  be:
 volumes:
   data:
   pgadmin-data:
+

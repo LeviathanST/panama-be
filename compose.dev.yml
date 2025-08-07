@@ -1,5 +1,5 @@
 services:
-  app:
+  be:
     build:
       context: .
     environment:
@@ -19,7 +19,7 @@ services:
     ports:
       - ${PORT}:${PORT}
     networks:
-      - general
+      - panama
   db: 
     image: postgres:17.5-alpine3.21
     environment:
@@ -38,7 +38,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - general
+      - panama
   pgadmin:
     image: dpage/pgadmin4:latest
     environment:
@@ -54,10 +54,11 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
-      - general
+      - panama
 
 networks:
-  general:
+  panama:
+    name: panama
 volumes:
   data:
   pgadmin-data:
