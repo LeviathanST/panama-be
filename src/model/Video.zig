@@ -60,9 +60,8 @@ pub fn deleteWithProject(conn: *pg.Conn, project_id: i32) !void {
         }
         return err;
     } orelse return; // ignore video id is null
-    defer video_id_row.deinit() catch @panic("Error when select video id");
-
     const video_id = video_id_row.getCol(i32, "video_id");
+    try video_id_row.deinit();
     _ = conn.exec(
         \\ DELETE FROM video
         \\ WHERE id = $1
