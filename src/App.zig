@@ -27,9 +27,9 @@ routes: []const tk.Route = &.{
                 },
             ),
         }),
+        .get("/openapi.json", tk.swagger.json(.{ .info = .{ .title = "Panama API", .version = "0.0.1" } })),
+        .get("/swagger-ui", tk.swagger.ui(.{ .url = "openapi.json" })),
     }),
-    .get("/openapi.json", tk.swagger.json(.{ .info = .{ .title = "Panama API", .version = "0.0.1" } })),
-    .get("/swagger-ui", tk.swagger.ui(.{ .url = "openapi.json" })),
 },
 config: Config,
 token_fingerprints: std.StringHashMap([]const u8),
@@ -39,23 +39,13 @@ pub fn configure(bundle: *tk.Bundle) void {
     bundle.addOverride(tk.ServerOptions, .factory(initServerOpts));
 
     bundle.addDeinitHook(cleanPool);
+
     bundle.addInitHook(notiServer);
     bundle.addInitHook(reassignConnPool);
 }
 
-fn cleanPool(pool: *pg.Pool) void {
-    pool.deinit();
-}
-
 fn notiServer(config: Config) void {
     std.log.info("Server running on {d}", .{config.app.port});
-}
-
-pub fn initArena() std.heap.ArenaAllocator {
-    return std.heap.ArenaAllocator.init(std.heap.page_allocator);
-}
-pub fn iniTokenFingerprints(arena: std.heap.ArenaAllocator) std.StringHashMap([]const u8) {
-    return std.StringHashMap([]const u8).init(arena.allocator());
 }
 
 pub fn initServerOpts(config: Config) !tk.ServerOptions {
@@ -66,12 +56,14 @@ pub fn initServerOpts(config: Config) !tk.ServerOptions {
         },
         .request = .{
             .lazy_read_size = 1024 * 1024 * 2, // 2mb
-            .max_body_size = 1_000_000_000, // 1gb
+            .max_body_size = 1024 * 1024, // 1mb
             .max_multiform_count = 10,
         },
     };
 }
-
+fn cleanPool(pool: *pg.Pool) void {
+    pool.deinit();
+}
 pub fn initPool(ct: *tk.Container, config: Config) !pg.Pool {
     const pool = try pg.Pool.init(ct.allocator, .{
         .auth = .{
