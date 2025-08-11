@@ -15,12 +15,12 @@ pub const LoginError = login.Error;
 pub const UnProtected = struct {
     pub const @"GET /ping" = @import("api/ping.zig").ping;
     pub const @"POST /login" = login.login;
-    pub const @"POST /register" = register.register;
     pub const @"POST /refresh" = refresh.refresh;
     pub const @"GET /projects" = getAllproject;
 };
 
 pub const Protected = struct {
+    pub const @"POST /register" = register.register;
     pub const @"GET /verify" = @import("api/auth/verify.zig").verify;
 
     pub const @"POST /projects" = createProjectFn;
