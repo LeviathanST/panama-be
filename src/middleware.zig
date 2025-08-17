@@ -2,6 +2,7 @@ const std = @import("std");
 const tk = @import("tokamak");
 const pg = @import("pg");
 const util = @import("util.zig");
+const response = @import("response.zig");
 const Config = @import("Config.zig");
 const User = @import("model.zig").User;
 
@@ -35,6 +36,7 @@ pub const Auth = struct {
         };
     }
 };
+
 pub fn cors() tk.Route {
     const H = struct {
         fn handleCors(ctx: *tk.Context) anyerror!void {
@@ -52,5 +54,15 @@ pub fn cors() tk.Route {
 
     return .{
         .handler = H.handleCors,
+    };
+}
+pub fn errorFilter() tk.Route {
+    const H = struct {
+        pub fn handle(ctx1: *tk.Context) !void {
+            ctx1.error_handler = &response.Error.filter;
+        }
+    };
+    return .{
+        .handler = &H.handle,
     };
 }
