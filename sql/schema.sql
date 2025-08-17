@@ -38,3 +38,9 @@ CREATE TABLE IF NOT EXISTS video_project(
 
     PRIMARY KEY (project_id, video_id)
 );
+CREATE TABLE IF NOT EXISTS sponsor(
+    id                      SERIAL PRIMARY KEY,
+    src                     VARCHAR(255) NOT NULL,
+    alt                     VARCHAR(50) NOT NULL
+);
+
