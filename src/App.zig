@@ -15,8 +15,9 @@ server: tk.Server,
 server_opts: tk.ServerOptions,
 arena: std.heap.ArenaAllocator,
 routes: []const tk.Route = &.{
-    mw.errorFilter(), .group("", &.{
+    .group("", &.{
         mw.cors(),
+        mw.errorFilter(),
         .group("/api", &.{
             .router(api.UnProtected),
             .provide(
