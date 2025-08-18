@@ -43,4 +43,12 @@ CREATE TABLE IF NOT EXISTS sponsor(
     src                     VARCHAR(255) NOT NULL,
     alt                     VARCHAR(50) NOT NULL
 );
-
+CREATE TABLE IF NOT EXISTS contact_form(
+    id                      SERIAL PRIMARY KEY,
+    guess_name              VARCHAR(60) NOT NULL,
+    email                   VARCHAR(127) NOT NULL,
+    interest_area           VARCHAR(30) NOT NULL,
+    content                 VARCHAR(4096) NOT NULL,
+    created_at              TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_confirmed            BOOLEAN NOT NULL DEFAULT FALSE
+);
