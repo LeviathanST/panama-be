@@ -6,7 +6,6 @@ const util = @import("util.zig");
 const model = @import("model.zig");
 const mw = @import("middleware.zig");
 const api = @import("api.zig");
-const @"error" = @import("error.zig");
 
 const Config = @import("Config.zig");
 
@@ -18,6 +17,7 @@ arena: std.heap.ArenaAllocator,
 routes: []const tk.Route = &.{
     .group("", &.{
         mw.cors(),
+        mw.errorFilter(),
         .group("/api", &.{
             .router(api.UnProtected),
             .provide(

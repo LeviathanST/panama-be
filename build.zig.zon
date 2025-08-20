@@ -4,8 +4,8 @@
     .fingerprint = 0xfd014afcc04a1cd1,
     .dependencies = .{
         .tokamak = .{
-            .url = "git+https://github.com/cztomsik/tokamak#a2bc37a3b775317f706ea2ba80678d81c3cb1702",
-            .hash = "tokamak-2.0.0-FbnSeb0VBQBAOGkxul1pEDYP17AJPQFZqukzP4St18Jk",
+            .url = "git+https://github.com/cztomsik/tokamak#6655d13792c1b2f9883a22af9017ee2d6e3c5d5e",
+            .hash = "tokamak-2.0.0-FbnSeSaDBQBfVI1BKApEc3HT_Me_EcJCIZnFIwVfE100",
         },
         .zenv = .{
             .url = "git+https://github.com/zig-space/zenv?ref=0.14.1#4acc8d9772fd23c5cb3421325e8086899333b526",
