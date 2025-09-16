@@ -1,4 +1,4 @@
-FROM leviathanst/zig:0.14.1 AS build
+FROM leviathanst/zig:0.15.1 AS build
 
 WORKDIR /app
 COPY . .
