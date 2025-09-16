@@ -12,9 +12,29 @@ pub const Pair = struct {
 pub const Claims = struct {
     username: []const u8,
     fingerprint: []const u8,
-    iat: i64,
-    exp: ?i64 = null,
+    /// TODO: https://github.com/ziglang/zig/issues/22247
+    _iat: []const u8,
+    _exp: ?[]const u8 = null,
+
+    /// The caller should `free()` memory the return value
+    /// after finish.
+    ///
+    /// NOTE: this function is only temporary until
+    /// the issue (noted in Claims) is fixed by Zig.
+    pub fn int64ToSlice(alloc: std.mem.Allocator, number: i64) ![]const u8 {
+        return std.fmt.allocPrint(alloc, "{d}", .{number});
+    }
+
+    pub fn exp(self: Claims) !i64 {
+        std.debug.assert(self._exp != null); // .exp is required in the AT
+        return std.fmt.parseInt(i64, self._exp.?, 10);
+    }
+    pub fn iat(self: Claims) !i64 {
+        std.debug.assert(self._iat != null); // .iat is required in the AT
+        return std.fmt.parseInt(i64, self._iat.?, 10);
+    }
 };
+
 const ValidType = enum { r, a };
 
 /// Pair token is revoked each times generates one
@@ -29,16 +49,21 @@ pub fn generate(
     const urn = uuid.urn.serialize(id);
     const fp = try alloc.dupe(u8, &urn);
 
+    const iat = try Claims.int64ToSlice(alloc, std.time.timestamp());
+    defer alloc.free(iat);
+    const exp = try Claims.int64ToSlice(alloc, std.time.timestamp() + 24 * 60 * 60); // = 1 day
+    defer alloc.free(exp);
+
     const a_claims: Claims = .{
         .username = username,
         .fingerprint = fp,
-        .iat = std.time.timestamp(),
-        .exp = std.time.timestamp() + 24 * 60 * 60, // = 1 day
+        ._iat = iat,
+        ._exp = exp,
     };
     const r_claims: Claims = .{
         .username = username,
         .fingerprint = fp,
-        .iat = std.time.timestamp(),
+        ._iat = iat,
     };
 
     std.log.debug("Generate token for user {s}!", .{username});
@@ -89,14 +114,20 @@ pub fn verify(
 pub fn isValid(alloc: std.mem.Allocator, token: jwt.Token, valid_type: ValidType) !Claims {
     var validator = try jwt.Validator.init(token);
     defer validator.deinit();
-    if (valid_type == .a) {
-        if (validator.isExpired(std.time.timestamp())) return Error.ExpiredToken;
-    }
     const parsed = try std.json.parseFromValueLeaky(
         Claims,
         alloc,
         validator.claims.value,
         .{ .ignore_unknown_fields = true },
     );
+    if (valid_type == .a) {
+        // I need to use "Claims.exp()" to convert exp slice
+        // into i64.
+        // validator.isExpired
+        const now = std.time.timestamp();
+        if (!(now - validator.leeway < try parsed.exp())) {
+            return Error.ExpiredToken;
+        }
+    }
     return parsed;
 }
