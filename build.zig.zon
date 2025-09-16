@@ -4,24 +4,24 @@
     .fingerprint = 0xfd014afcc04a1cd1,
     .dependencies = .{
         .tokamak = .{
-            .url = "git+https://github.com/cztomsik/tokamak#6655d13792c1b2f9883a22af9017ee2d6e3c5d5e",
-            .hash = "tokamak-2.0.0-FbnSeSaDBQBfVI1BKApEc3HT_Me_EcJCIZnFIwVfE100",
+            .url = "git+https://github.com/cztomsik/tokamak?ref=main#02873b05ec3e406605157622201f1e9202df4bd8",
+            .hash = "tokamak-2.0.0-FbnSeWsTBgAl869lzvHzNo5l_hn_6zUmuky23bjGjDOh",
         },
         .zenv = .{
             .url = "git+https://github.com/zig-space/zenv?ref=0.14.1#4acc8d9772fd23c5cb3421325e8086899333b526",
             .hash = "zenv-0.0.0-hX4COQ86AAAPYkB1m-EMoGV-W3EZoR3wPIB-HlzrAn2i",
         },
         .pg = .{
-            .url = "git+https://github.com/karlseguin/pg.zig#2e90b7e93d08a4dd66dc4cee213dad082d5932fe",
-            .hash = "pg-0.0.0-Wp_7gTADBgCzt2PaHucq9iRV0a5gdXY5ADtKAOqS6uQS",
+            .url = "git+https://github.com/karlseguin/pg.zig?ref=master#f930e90b735ebadf28244c7a31e9c442b264b544",
+            .hash = "pg-0.0.0-Wp_7gfoJBgDfkQBaWRTwjYcTdNyS8UHRDmMTs4NuSmxY",
         },
         .zig_jwt = .{
-            .url = "git+https://github.com/deatil/zig-jwt#ad414ac4be4b856fceb723356a803ee3393b687d",
-            .hash = "zig_jwt-1.2.11-w3q9SAo4BAC9hzVI3tmjGuqlPcQn0t92JWLYFCVnTP-S",
+            .url = "git+https://github.com/deatil/zig-jwt?ref=v1.3.0#35de84265f1128b64600dcce1b1f93e7a60320c8",
+            .hash = "zig_jwt-1.3.0-w3q9SPw1BAA53VTfgfgR8-L6jAYEz-IbX_BS3UEJW7aE",
         },
         .uuid = .{
-            .url = "git+https://github.com/r4gus/uuid-zig#9d66e23e32cd7208d1becb4fd9352f8a27f89551",
-            .hash = "uuid-0.3.0-oOieIYF1AAA_BtE7FvVqqTn5uEYTvvz7ycuVnalCOf8C",
+            .url = "git+https://github.com/r4gus/uuid-zig?ref=0.4.0#93f35b4abbef52db7b48fd20084e73d3c6e20ee0",
+            .hash = "uuid-0.4.0-oOieIR2AAAChAUVBY4ABjYI1XN0EbVALmiN0JIlggC3i",
         },
     },
     .paths = .{

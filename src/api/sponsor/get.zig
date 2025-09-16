@@ -8,9 +8,9 @@ pub fn getAll(
     pool: *pg.Pool,
 ) !Success([]Sponsor) {
     var list = try Sponsor.getAll(pool, alloc);
-    defer list.deinit();
+    defer list.deinit(alloc);
     return .{
         .message = "Get all sponsors successfully!",
-        .data = try list.toOwnedSlice(),
+        .data = try list.toOwnedSlice(alloc),
     };
 }

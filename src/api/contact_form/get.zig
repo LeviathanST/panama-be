@@ -8,9 +8,9 @@ pub fn getAll(
     pool: *pg.Pool,
 ) !Success([]ContactForm) {
     var list = try ContactForm.getAll(pool, alloc);
-    defer list.deinit();
+    defer list.deinit(alloc);
     return .{
         .message = "Get all contact forms successfully!",
-        .data = try list.toOwnedSlice(),
+        .data = try list.toOwnedSlice(alloc),
     };
 }

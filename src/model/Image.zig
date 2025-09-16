@@ -63,10 +63,11 @@ pub fn deleteWithProject(conn: *pg.Conn, alloc: std.mem.Allocator, project_id: i
     };
     defer rs.deinit();
 
-    var image_ids = std.ArrayList(i32).init(alloc);
+    var image_ids = std.array_list.Aligned(i32, null).empty;
+    defer image_ids.deinit(alloc);
     while (try rs.next()) |row| {
         const image_id = row.getCol(i32, "image_id");
-        try image_ids.append(image_id);
+        try image_ids.append(alloc, image_id);
     }
 
     for (image_ids.items[0..]) |id| {
@@ -81,7 +82,11 @@ pub fn deleteWithProject(conn: *pg.Conn, alloc: std.mem.Allocator, project_id: i
         };
     }
 }
-pub fn findManyByProjectId(alloc: std.mem.Allocator, pool: *pg.Pool, project_id: i32) !std.ArrayList([]const u8) {
+pub fn findManyByProjectId(
+    alloc: std.mem.Allocator,
+    pool: *pg.Pool,
+    project_id: i32,
+) !std.array_list.Aligned([]const u8, null) {
     const conn = try pool.acquire();
     defer conn.release();
 
@@ -97,12 +102,13 @@ pub fn findManyByProjectId(alloc: std.mem.Allocator, pool: *pg.Pool, project_id:
     };
     defer rs.deinit();
 
-    var list = std.ArrayList([]const u8).init(alloc);
-    errdefer list.deinit();
+    var list = std.array_list.Aligned([]const u8, null).empty;
+    // FIX: free items
+    errdefer list.deinit(alloc);
 
     while (try rs.next()) |row| {
         const url = row.getCol([]const u8, "url");
-        try list.append(try alloc.dupe(u8, url));
+        try list.append(alloc, try alloc.dupe(u8, url));
     }
     return list;
 }

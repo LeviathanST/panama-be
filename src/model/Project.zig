@@ -16,7 +16,10 @@ description: []const u8,
 category: []const u8,
 time: ?[]const u8,
 
-pub fn getAll(pool: *pg.Pool, alloc: std.mem.Allocator) !std.ArrayList(base_type.ProjectResponse) {
+pub fn getAll(
+    pool: *pg.Pool,
+    alloc: std.mem.Allocator,
+) !std.array_list.Aligned(base_type.ProjectResponse, null) {
     const conn = try pool.acquire();
     defer conn.release();
 
@@ -30,8 +33,8 @@ pub fn getAll(pool: *pg.Pool, alloc: std.mem.Allocator) !std.ArrayList(base_type
     };
     defer rs.deinit();
 
-    var list = std.ArrayList(base_type.ProjectResponse).init(alloc);
-    errdefer list.deinit();
+    var list = std.array_list.Aligned(base_type.ProjectResponse, null).empty;
+    errdefer list.deinit(alloc);
 
     while (try rs.next()) |row| {
         const inst = try row.to(Self, .{ .allocator = alloc, .map = .name });
@@ -43,14 +46,14 @@ pub fn getAll(pool: *pg.Pool, alloc: std.mem.Allocator) !std.ArrayList(base_type
                 };
             } else break :v null;
         };
-        try list.append(.{
+        try list.append(alloc, .{
             .id = inst.id,
             .title = inst.title,
             .thumbnail = inst.thumbnail,
             .description = inst.description,
             .category = inst.category,
             .time = inst.time,
-            .images = try images.toOwnedSlice(),
+            .images = try images.toOwnedSlice(alloc),
             .video = video,
         });
     }

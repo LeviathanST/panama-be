@@ -6,9 +6,9 @@ const Success = @import("../../response.zig").Success;
 
 pub fn getAll(pool: *pg.Pool, alloc: std.mem.Allocator) !Success([]base_type.ProjectResponse) {
     var list = try Project.getAll(pool, alloc);
-    defer list.deinit();
+    defer list.deinit(alloc);
     return .{
         .message = "Get all project id successful!",
-        .data = try list.toOwnedSlice(),
+        .data = try list.toOwnedSlice(alloc),
     };
 }
