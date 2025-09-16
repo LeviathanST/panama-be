@@ -9,11 +9,11 @@ pub fn getAll(pool: *pg.Pool, alloc: std.mem.Allocator) !std.ArrayList(@This()) 
     defer conn.release();
     const rs = try conn.query("SELECT * FROM sponsor", .{});
     defer rs.deinit();
-    var list = std.ArrayList(@This()).init(alloc);
-    errdefer list.deinit();
+    var list = std.array_list.Aligned(@This(), null).empty;
+    errdefer list.deinit(alloc);
     while (try rs.next()) |row| {
         const inst = try row.to(@This(), .{ .allocator = alloc });
-        try list.append(inst);
+        try list.append(alloc, inst);
     }
     return list;
 }

@@ -12,7 +12,10 @@ const Video = model.Video;
 const Success = @import("../../response.zig").Success;
 pub fn find(alloc: std.mem.Allocator, pool: *pg.Pool, id: i32) !Success(base_type.ProjectResponse) {
     const project = try Project.find(alloc, pool, id);
+
     var images = try Image.findManyByProjectId(alloc, pool, id);
+    defer images.deinit(alloc);
+
     const raw_video = try Video.findByProjectId(alloc, pool, id);
     const video: ?base_type.VideoResponse = blk: {
         if (raw_video) |v| {
@@ -29,7 +32,7 @@ pub fn find(alloc: std.mem.Allocator, pool: *pg.Pool, id: i32) !Success(base_typ
             .description = project.description,
             .category = project.category,
             .time = project.time,
-            .images = try images.toOwnedSlice(),
+            .images = try images.toOwnedSlice(alloc),
             .video = video,
         },
     };
