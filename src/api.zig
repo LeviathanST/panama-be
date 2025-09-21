@@ -21,6 +21,7 @@ const createForm = @import("api/contact_form/create.zig").create;
 
 pub const InsertProjectError = createProject.Error;
 pub const LoginError = login.Error;
+pub const UpdateCategoryError = @import("api/category/update.zig").UpdateError;
 
 pub const UnProtected = struct {
     pub const @"GET /ping" = @import("api/ping.zig").ping;
@@ -30,6 +31,7 @@ pub const UnProtected = struct {
     pub const @"GET /sponsors" = getAllSponsors;
 
     pub const @"POST /contact-forms" = createForm;
+    pub const @"GET /category" = @import("api/category/get.zig").get;
 };
 
 pub const Protected = struct {
@@ -40,6 +42,7 @@ pub const Protected = struct {
     pub const @"DELETE /projects/:id" = deleteProject;
     pub const @"PUT /projects/:id" = updateProject;
     pub const @"GET /projects/:id" = findProject;
+    pub const @"PUT /category/:category_type" = @import("api/category/update.zig").update;
 
     pub const @"POST /sponsors" = createSponsor;
     pub const @"DELETE /sponsors/:id" = deleteSponsor;

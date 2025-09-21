@@ -4,6 +4,12 @@ CREATE TABLE IF NOT EXISTS "user"(
     username                 VARCHAR(25) UNIQUE NOT NULL,
     password                 VARCHAR(255) NOT NULL
 );
+CREATE TABLE IF NOT EXISTS category_info(
+    type                    cate PRIMARY KEY,
+    name                    VARCHAR(255),
+    normal_img_url          VARCHAR(255),
+    hover_img_url           VARCHAR(255)
+);
 CREATE TABLE IF NOT EXISTS project(
     id                      SERIAL PRIMARY KEY,
     title                   VARCHAR(255) NOT NULL,
