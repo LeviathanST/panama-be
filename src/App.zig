@@ -33,6 +33,7 @@ routes: []const tk.Route = &.{
 },
 config: Config,
 token_fingerprints: std.StringHashMap([]const u8),
+limit_logins: std.StringHashMap(api.LimitLogin),
 
 pub fn configure(bundle: *tk.Bundle) void {
     bundle.add(pg.Pool, .factory(initPool));
