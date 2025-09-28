@@ -12,6 +12,7 @@ const ImageError = model.Image;
 const VideoError = model.Video;
 const ProjectError = model.Project;
 const LoginError = api.LoginError;
+const UpdateCategoryError = api.UpdateCategoryError;
 const TokenError = util.TokenError;
 
 const ErrorMapping = struct {
@@ -54,6 +55,7 @@ const error_mappings = [_]ErrorMapping{
     .bad_request(VideoError.InsertError.VideoUrlExisted, "Video URL is existed!"),
     .bad_request(VideoError.InsertError.VideoUrlInProjectExisted, "Video URL is existed in project!"),
     //
+    .bad_request(UpdateCategoryError.EmptyString, "Failed to update, your value must be no-empty!"),
     .bad_request(LoginError.WrongPassword, "Wrong password!"),
 
     .bad_request(TokenError.ExpiredToken, "Expired token!"),
