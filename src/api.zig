@@ -21,6 +21,7 @@ const createForm = @import("api/contact_form/create.zig").create;
 
 pub const InsertProjectError = createProject.Error;
 pub const LoginError = login.Error;
+pub const LimitLogin = login.LimitLogin;
 pub const UpdateCategoryError = @import("api/category/update.zig").UpdateError;
 
 pub const UnProtected = struct {

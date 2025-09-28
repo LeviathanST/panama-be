@@ -57,6 +57,7 @@ const error_mappings = [_]ErrorMapping{
     //
     .bad_request(UpdateCategoryError.EmptyString, "Failed to update, your value must be no-empty!"),
     .bad_request(LoginError.WrongPassword, "Wrong password!"),
+    .bad_request(LoginError.LimitLogin, "Please try again in a few minutes!"),
 
     .bad_request(TokenError.ExpiredToken, "Expired token!"),
     .bad_request(TokenError.InvalidToken, "Invalid token!"),
