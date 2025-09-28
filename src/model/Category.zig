@@ -51,9 +51,9 @@ pub fn update(
             "",
         )) return InsertError.EmptyString;
         _ = conn.exec(
-            \\\ UPDATE category_img
-            \\\ SET    normal_img_url = $1  
-            \\\ WHERE  type = $2
+            \\ UPDATE category_info
+            \\ SET    normal_img_url = $1  
+            \\ WHERE  type = $2
         , .{ v, category_type }) catch |err| {
             if (conn.err) |pg_err| {
                 std.log.err("{s}", .{pg_err.message});
@@ -69,9 +69,9 @@ pub fn update(
             "",
         )) return InsertError.EmptyString;
         _ = conn.exec(
-            \\\ UPDATE category_img
-            \\\ SET    hover_img_url = $1  
-            \\\ WHERE  type = $2
+            \\ UPDATE category_info
+            \\ SET    hover_img_url = $1  
+            \\ WHERE  type = $2
         , .{ v, category_type }) catch |err| {
             if (conn.err) |pg_err| {
                 std.log.err("{s}", .{pg_err.message});
@@ -87,9 +87,9 @@ pub fn update(
             "",
         )) return InsertError.EmptyString;
         _ = conn.exec(
-            \\\ UPDATE category_img
-            \\\ SET    name = $1  
-            \\\ WHERE  type = $2
+            \\ UPDATE category_info
+            \\ SET    name = $1  
+            \\ WHERE  type = $2
         , .{ v, category_type }) catch |err| {
             if (conn.err) |pg_err| {
                 std.log.err("{s}", .{pg_err.message});
